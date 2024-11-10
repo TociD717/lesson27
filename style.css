@@ -1,0 +1,86 @@
+.carousel-container {
+    width: calc(100% - 60px);
+    margin: 0 auto;
+}
+
+.carousel {
+    position: relative;
+    width: 80%;
+    height: 700px;
+    padding: 0px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    user-select: none;
+}
+
+.slide {
+    display: flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: 0%;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    z-index: -99;
+    transition: opacity 0.5s;
+}
+
+.active {
+    opacity: 100%;
+    z-index: 1;
+}
+
+.slide:nth-of-type(1) {
+    background-color: red;
+}
+
+.slide:nth-of-type(2) {
+    background-color: blue;
+}
+
+.slide:nth-of-type(3) {
+    background-color: orange;
+}
+
+.slide:nth-of-type(4) {
+    background-color: magenta;
+}
+
+.slide:nth-of-type(5) {
+    background-color: green;
+}
+
+.controls,
+.indicators-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.btn-pause,
+.btn-next,
+.btn-prev {
+    display: flex;
+    width: 100px;
+    height: 50px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    background-color: beige;
+    cursor: pointer;
+}
+
+.indicator {
+    width: 50px;
+    height: 50px;
+    background-color: beige;
+    cursor: pointer;
+}
+
+.indicator.active {
+    background-color: red;
+}
