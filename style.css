@@ -1,3 +1,7 @@
+html {
+    background-color: #171717;
+}
+
 .carousel-container {
     width: calc(100% - 60px);
     margin: 0 auto;
@@ -26,6 +30,11 @@
     justify-content: center;
     z-index: -99;
     transition: opacity 0.5s;
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .active {
@@ -34,23 +43,23 @@
 }
 
 .slide:nth-of-type(1) {
-    background-color: red;
+    background-image: url(src/images/fighter.jpg);
 }
 
 .slide:nth-of-type(2) {
-    background-color: blue;
+    background-image: url(src/images/thief.jpg);
 }
 
 .slide:nth-of-type(3) {
-    background-color: orange;
+    background-image: url(src/images/wizard.jpg);
 }
 
 .slide:nth-of-type(4) {
-    background-color: magenta;
+    background-image: url(src/images/cleric.jpg);
 }
 
 .slide:nth-of-type(5) {
-    background-color: green;
+    background-image: url(src/images/barbarian.jpg);
 }
 
 .controls,
@@ -62,6 +71,7 @@
 }
 
 .btn-pause,
+.btn-play,
 .btn-next,
 .btn-prev {
     display: flex;
@@ -70,17 +80,36 @@
     text-align: center;
     justify-content: center;
     align-items: center;
-    background-color: beige;
     cursor: pointer;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #171717;
+}
+
+.btn-pause{
+    background-image: url(src/icons/pause-button.png);
+}
+
+.btn-play {
+    background-image: url(src/icons/play-buttton.png);
+}
+
+.btn-next {
+    background-image: url(src/icons/next.png);
+}
+
+.btn-prev {
+    background-image: url(src/icons/prev.png);
 }
 
 .indicator {
-    width: 50px;
-    height: 50px;
+    width: 100px;
+    height: 10px;
     background-color: beige;
     cursor: pointer;
 }
 
 .indicator.active {
-    background-color: red;
+    background-color: #5e2b2a;
 }
