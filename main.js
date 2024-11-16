@@ -1,117 +1,160 @@
-(function () {
-  let carouselContainer = document.querySelector(".carousel-container");
-  let carousel = carouselContainer.querySelector(".carousel");
-  let slides = carousel.querySelectorAll(".slide");
-  let indicatorsContainer = carouselContainer.querySelector(
-    ".indicators-container"
-  );
-  let indicators = indicatorsContainer.querySelectorAll(".indicator");
-  let pauseBtn = carouselContainer.querySelector(".btn-pause");
-  let nextBtn = carouselContainer.querySelector(".btn-next");
-  let prevBtn = carouselContainer.querySelector(".btn-prev");
-  let currentSlide = 0;
-  let timer = null;
-  let startPosX = null;
-  let endPosX = null;
+function Carousel(containerClass = '.carousel-container', slideClass = '.slide') {
+  this.container = document.querySelector(containerClass);
+  this.slides = document.querySelectorAll(slideClass);
+  this.interval = 2000;
+}
 
-  const CODE_ARROW_LEFT = "ArrowLeft";
-  const CODE_ARROW_RIGHT = "ArrowRight";
-  const CODE_SPACE = "Space";
-  const INTERVAL_TIME = 2000;
-  let isPlaying = true;
+Carousel.prototype = {
+  _initProps: function () {
+    this.currentSlide = 0;
+    this.timer = null;
+    this.startPosX = null;
+    this.endPosX = null;
+    this.SLIDES_COUNT = this.slides.length;
 
-  function goToSlide(n) {
-    slides[currentSlide].classList.toggle("active");
-    indicators[currentSlide].classList.toggle("active");
-    currentSlide = (n + slides.length) % slides.length;
-    slides[currentSlide].classList.toggle("active");
-    indicators[currentSlide].classList.toggle("active");
-  }
+    this.CODE_ARROW_LEFT = 'ArrowLeft';
+    this.CODE_ARROW_RIGHT = 'ArrowRight';
+    this.CODE_SPACE = 'Space';
+    this.INTERVAL_TIME = 2000;
+    this.isPlaying = true;
+  },
 
-  function gotoPrev() {
-    goToSlide(currentSlide - 1);
-  }
+  _initControls: function () {
+    const controls = document.createElement('div');
+    const PAUSE = '<div class="btn-pause"></div>';
+    const PREV = '<div class="btn-prev"></div>';
+    const NEXT = '<div class="btn-next"></div>';
 
-  function gotoNext() {
-    goToSlide(currentSlide + 1);
-  }
+    controls.setAttribute('class', 'controls');
+    controls.innerHTML = PAUSE + PREV + NEXT;
 
-  function tick() {
-    timer = setInterval(gotoNext, INTERVAL_TIME);
-  }
+    this.container.append(controls);
+    this.pauseBtn = this.container.querySelector('.btn-pause');
+    this.prevBtn = this.container.querySelector('.btn-prev');
+    this.nextBtn = this.container.querySelector('.btn-next');
+  },
 
-  function pauseHandler() {
-    pauseBtn.classList.remove("btn-pause");
-    pauseBtn.classList.add("btn-play");
-    isPlaying = false;
-    clearInterval(timer);
-  }
+  _initIndicators: function () {
+    const indicators = document.createElement('div');
+    indicators.setAttribute('class', 'indicators-container');
 
-  function playHandler() {
-    pauseBtn.classList.remove("btn-play");
-    pauseBtn.classList.add("btn-pause");
-    isPlaying = true;
-    tick();
-  }
+    for (let i = 0; i < this.SLIDES_COUNT; i++) {
+      const indicator = document.createElement('div');
 
-  function pausePlayHandler() {
-    isPlaying ? pauseHandler() : playHandler();
-  }
-
-  function nextHandler() {
-    gotoNext();
-    pauseHandler();
-  }
-
-  function prevHandler() {
-    gotoPrev();
-    pauseHandler();
-  }
-
-  function indicatorHandler(e) {
-    let target = e.target;
-    pauseHandler();
-    goToSlide(+target.dataset.indicatorNumber - 1);
-  }
-
-  function keyHandler(e) {
-    pressedKey = e.code;
-    if (e.code == CODE_SPACE) {
-      e.preventDefault();
-      pausePlayHandler();
+      indicator.setAttribute('class', i ? 'indicator' : 'indicator active');
+      indicator.dataset.indicatorNumber = `${i}`;
+      indicators.append(indicator);
     }
-    if (e.code == CODE_ARROW_RIGHT) nextHandler();
-    if (e.code == CODE_ARROW_LEFT) prevHandler();
-  }
 
-  function swipeStartHandler(e) {
-    startPosX = e instanceof MouseEvent ? e.pageX : e.changedTouches[0].pageX;
-  }
+    this.container.append(indicators);
 
-  function swipeEndHandler(e) {
-    endPosX = e instanceof MouseEvent ? e.pageX : e.changedTouches[0].pageX;
-    if (endPosX - startPosX > 100) prevHandler();
-    if (endPosX - startPosX < -100) nextHandler();
-  }
+    this.indicatorsContainer = this.container.querySelector('.indicators-container');
+    this.indicatorItems = this.container.querySelectorAll('.indicator');
+  },
 
-  function initListeners() {
-    pauseBtn.addEventListener("click", pausePlayHandler);
-    nextBtn.addEventListener("click", nextHandler);
-    prevBtn.addEventListener("click", prevHandler);
-    indicators.forEach((indicator) => {
-      indicator.addEventListener("click", indicatorHandler);
+  _initListeners: function () {
+    this.pauseBtn.addEventListener('click', this.pausePlay.bind(this));
+    this.nextBtn.addEventListener('click', this.next.bind(this));
+    this.prevBtn.addEventListener('click', this.prev.bind(this));
+    this.indicatorItems.forEach((indicator) => {
+      indicator.addEventListener('click', this.indicator.bind(this));
     });
-    carousel.addEventListener("mousedown", swipeStartHandler);
-    carousel.addEventListener("mouseup", swipeEndHandler);
-    carousel.addEventListener("touchstart", swipeStartHandler);
-    carousel.addEventListener("touchend", swipeEndHandler);
-    document.addEventListener("keydown", keyHandler);
-  }
+    this.container.addEventListener('mousedown', this.swipeStart.bind(this));
+    this.container.addEventListener('mouseup', this.swipeEnd.bind(this));
+    this.container.addEventListener('touchstart', this.swipeStart.bind(this));
+    this.container.addEventListener('touchend', this.swipeEnd.bind(this));
+    document.addEventListener('keydown', this.key.bind(this));
+  },
 
-  function init() {
-    initListeners();
-    tick();
-  }
+  _goToSlide: function (n) {
+    this.slides[this.currentSlide].classList.toggle('active');
+    this.indicatorItems[this.currentSlide].classList.toggle('active');
+    this.currentSlide = (n + this.slides.length) % this.slides.length;
+    this.slides[this.currentSlide].classList.toggle('active');
+    this.indicatorItems[this.currentSlide].classList.toggle('active');
+  },
 
-  init();
-})();
+  _gotoPrev: function () {
+    this._goToSlide(this.currentSlide - 1);
+  },
+
+  _gotoNext: function () {
+    this._goToSlide(this.currentSlide + 1);
+  },
+
+  _tick: function () {
+    this.timer = setInterval(this._gotoNext.bind(this), this.INTERVAL_TIME);
+  },
+
+  pause: function () {
+    this.pauseBtn.classList.remove('btn-pause');
+    this.pauseBtn.classList.add('btn-play');
+    this.isPlaying = false;
+    clearInterval(this.timer);
+  },
+
+  play: function () {
+    this.pauseBtn.classList.remove('btn-play');
+    this.pauseBtn.classList.add('btn-pause');
+    this.isPlaying = true;
+    this._tick();
+  },
+
+  pausePlay: function () {
+    this.isPlaying ? this.pause() : this.play();
+  },
+
+  next: function () {
+    this._gotoNext();
+    this.pause();
+  },
+
+  prev: function () {
+    this._gotoPrev();
+    this.pause();
+  },
+
+  indicator: function (e) {
+    const target = e.target;
+    this.pause();
+    this._goToSlide(+target.dataset.indicatorNumber);
+  },
+
+  key: function (e) {
+    if (e.code == this.CODE_SPACE) {
+      e.preventDefault();
+      this.pausePlay();
+    }
+    if (e.code == this.CODE_ARROW_RIGHT) this.next();
+    if (e.code == this.CODE_ARROW_LEFT) this.prev();
+  },
+
+  swipeStart: function (e) {
+    if (e.changedTouches) {
+      this.startPosX = e.changedTouches[0].pageX;
+    } else {
+      this.startPosX = e.pageX;
+    }
+  },
+
+  swipeEnd: function (e) {
+    if (e.changedTouches) {
+      this.endPosX = e.changedTouches[0].pageX;
+    } else {
+      this.endPosX = e.pageX;
+    }
+    if (this.endPosX - this.startPosX > 100) this.prev();
+    if (this.endPosX - this.startPosX < -100) this.next();
+  },
+
+  init: function () {
+    this._initProps();
+    this._initControls();
+    this._initIndicators();
+    this._initListeners();
+    this._tick();
+  },
+};
+
+const customCarousel = new Carousel();
+customCarousel.init();
