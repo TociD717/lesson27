@@ -65,10 +65,6 @@ class Carousel {
     this.indicatorItems.forEach((indicator) => {
       indicator.addEventListener('click', this.indicator.bind(this));
     });
-    this.container.addEventListener('mousedown', this.swipeStart.bind(this));
-    this.container.addEventListener('mouseup', this.swipeEnd.bind(this));
-    this.container.addEventListener('touchstart', this.swipeStart.bind(this));
-    this.container.addEventListener('touchend', this.swipeEnd.bind(this));
     document.addEventListener('keydown', this.key.bind(this));
   }
 
@@ -135,16 +131,6 @@ class Carousel {
     if (e.code == this.CODE_ARROW_LEFT) this.prev();
   }
 
-  swipeStart(e) {
-    this.startPosX = e instanceof MouseEvent ? e.pageX : e.changedTouches[0].pageX;
-  }
-
-  swipeEnd(e) {
-    this.endPosX = e instanceof MouseEvent ? e.pageX : e.changedTouches[0].pageX;
-    if (this.endPosX - this.startPosX > 100) this.prev();
-    if (this.endPosX - this.startPosX < -100) this.next();
-  }
-
   init() {
     this._initProps();
     this._initControls();
@@ -153,6 +139,4 @@ class Carousel {
     this._tick();
   }
 }
-
-const customCarousel = new Carousel();
-customCarousel.init();
+export { Carousel };
