@@ -1,7 +1,6 @@
 function Carousel(containerClass = '.carousel-container', slideClass = '.slide') {
   this.container = document.querySelector(containerClass);
   this.slides = document.querySelectorAll(slideClass);
-  this.interval = 2000;
 }
 
 Carousel.prototype = {
